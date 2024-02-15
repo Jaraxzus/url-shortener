@@ -1,0 +1,45 @@
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: server
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ..:/app
+    command: "./main"
+    ports:
+      - 8080:8080
+    networks:
+      - internet
+      - appnet
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    env_file: ../.env
+    ports:
+      - 27017:27017
+    volumes:
+      - ../mongo-volume:/data/db
+    networks:
+      - internet
+      - appnet
+
+  redis:
+    image: redis:7.2.0-alpine
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      - internet
+      - appnet
+
+networks:
+  internet:
+    name: internet
+    driver: bridge
+  appnet:
+    name: appnet
+    driver: bridge
